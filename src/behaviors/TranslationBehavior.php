@@ -63,15 +63,17 @@ class TranslationBehavior extends Behavior
         $translationModel = new $this->translationModelClass();
 
         $data = \Yii::$app->request->post($translationModel->formName());
-        foreach ($data as $lang => $record) {
-            $translation = $this->getTranslationModel($lang);
-            $translation->setAttributes(ArrayHelper::merge($record, [
-                $this->translationModelRelationColumn => $this->owner->getPrimaryKey(),
-                $this->translationModelLangColumn => $lang,
-            ]));
+        if (! empty($data)) {
+            foreach ($data as $lang => $record) {
+                $translation = $this->getTranslationModel($lang);
+                $translation->setAttributes(ArrayHelper::merge($record, [
+                    $this->translationModelRelationColumn => $this->owner->getPrimaryKey(),
+                    $this->translationModelLangColumn => $lang,
+                ]));
 
-            if (!$translation->save()) {
-                Toastr::warning(\Yii::t('admin', "Перевод на {$lang} неполный, не сохранен"));
+                if (!$translation->save()) {
+                    Toastr::warning(\Yii::t('admin', "Перевод на {$lang} неполный, не сохранен"));
+                }
             }
         }
     }
